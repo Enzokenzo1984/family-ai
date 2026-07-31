@@ -435,179 +435,159 @@
   </main>
 
   <script>
-    "use strict";
+  "use strict";
 
-    const avatarImage =
-      document.getElementById("avatarImage");
+  const avatarImage = document.getElementById("avatarImage");
+  const avatarPlaceholder = document.getElementById("avatarPlaceholder");
+  const avatarFrame = document.getElementById("avatarFrame");
+  const talkButton = document.getElementById("talkButton");
+  const statusText = document.getElementById("statusText");
+  const messageText = document.getElementById("messageText");
+  const speakerLabel = document.getElementById("speakerLabel");
+  const hintText = document.getElementById("hintText");
 
-    const avatarPlaceholder =
-      document.getElementById("avatarPlaceholder");
+  const demoReplies = [
+    "你好啊，今天过得好吗？",
+    "记得吃饭，也要多喝水。",
+    "有什么事情，可以慢慢跟我说。",
+    "今天辛苦了，先休息一下吧。",
+    "很高兴今天又可以和你说话。",
+    "不要太担心，事情慢慢处理就好。"
+  ];
 
-    const avatarFrame =
-      document.getElementById("avatarFrame");
+  let currentUtterance = null;
+  let isSpeaking = false;
 
-    const talkButton =
-      document.getElementById("talkButton");
+  avatarImage.addEventListener("load", function () {
+    avatarImage.style.display = "block";
+    avatarPlaceholder.style.display = "none";
+  });
 
-    const statusText =
-      document.getElementById("statusText");
+  avatarImage.addEventListener("error", function () {
+    avatarImage.style.display = "none";
+    avatarPlaceholder.style.display = "flex";
+    messageText.textContent =
+      "找不到 images/mum.jpg，请检查照片名称和路径。";
+  });
 
-    const messageText =
-      document.getElementById("messageText");
+  function chooseReply() {
+    const index = Math.floor(Math.random() * demoReplies.length);
+    return demoReplies[index];
+  }
 
-    const speakerLabel =
-      document.getElementById("speakerLabel");
+  function resetInterface() {
+    isSpeaking = false;
 
-    const hintText =
-      document.getElementById("hintText");
+    talkButton.classList.remove("active");
+    avatarFrame.classList.remove("speaking");
+    avatarFrame.classList.remove("listening");
 
-    const demoReplies = [
-      "你好啊，今天过得好吗？",
-      "记得吃饭，也要多喝水。",
-      "有什么事情，可以慢慢跟我说。",
-      "今天辛苦了，先休息一下吧。",
-      "很高兴今天又可以和你说话。",
-      "不要太担心，事情慢慢处理就好。"
-    ];
+    statusText.textContent = "准备与你对话";
+    hintText.textContent = "按一下开始简单互动";
+  }
 
-    let isSpeaking = false;
+  function findChineseVoice() {
+    const voices = window.speechSynthesis.getVoices();
 
-    avatarImage.addEventListener("load", function () {
-      avatarImage.style.display = "block";
-      avatarPlaceholder.style.display = "none";
-    });
-
-    avatarImage.addEventListener("error", function () {
-      avatarImage.style.display = "none";
-      avatarPlaceholder.style.display = "flex";
-      messageText.textContent =
-        "找不到 images/mum.jpg，请检查照片名称和路径。";
-    });
-
-    function chooseReply() {
-      const randomIndex =
-        Math.floor(Math.random() * demoReplies.length);
-
-      return demoReplies[randomIndex];
-    }
-
-    function getChineseVoice() {
-      const voices = window.speechSynthesis.getVoices();
-
-      const preferredVoice = voices.find(function (voice) {
-        const language = voice.lang.toLowerCase();
-
-        return (
-          language.includes("zh-cn") ||
-          language.includes("zh-sg") ||
-          language.includes("zh-tw") ||
-          language.includes("zh-hk") ||
-          language.startsWith("zh")
-        );
-      });
-
-      return preferredVoice || null;
-    }
-
-    function resetInterface() {
-      isSpeaking = false;
-
-      talkButton.classList.remove("active");
-      avatarFrame.classList.remove("speaking");
-      avatarFrame.classList.remove("listening");
-
-      statusText.textContent = "准备与你对话";
-      hintText.textContent = "按一下开始简单互动";
-    }
-
-    function speakReply(reply) {
-      if (!("speechSynthesis" in window)) {
-        messageText.textContent =
-          reply + "（此浏览器暂时无法播放语音。）";
-
-        resetInterface();
-        return;
-      }
-
-      window.speechSynthesis.cancel();
-
-      const utterance =
-        new SpeechSynthesisUtterance(reply);
-
-      const selectedVoice = getChineseVoice();
-
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
-        utterance.lang = selectedVoice.lang;
-      } else {
-        utterance.lang = "zh-CN";
-      }
-
-      utterance.rate = 0.9;
-      utterance.pitch = 1;
-      utterance.volume = 1;
-
-      utterance.onstart = function () {
-        isSpeaking = true;
-
-        statusText.textContent = "正在回答";
-        hintText.textContent = "头像正在说话";
-
-        avatarFrame.classList.remove("listening");
-        avatarFrame.classList.add("speaking");
-      };
-
-      utterance.onend = function () {
-        resetInterface();
-      };
-
-      utterance.onerror = function () {
-        messageText.textContent =
-          reply + "（语音播放失败，请再按一次。）";
-
-        resetInterface();
-      };
-
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function beginDemoInteraction() {
-      if (isSpeaking) {
-        window.speechSynthesis.cancel();
-        resetInterface();
-        return;
-      }
-
-      talkButton.classList.add("active");
-      avatarFrame.classList.add("listening");
-
-      statusText.textContent = "正在听你说话";
-      hintText.textContent = "免费版目前使用模拟回答";
-
-      speakerLabel.textContent = "你";
-      messageText.textContent = "我正在听……";
-
-      setTimeout(function () {
-        const reply = chooseReply();
-
-        speakerLabel.textContent = "岳母 AI";
-        messageText.textContent = reply;
-
-        speakReply(reply);
-      }, 1200);
-    }
-
-    talkButton.addEventListener(
-      "click",
-      beginDemoInteraction
+    return (
+      voices.find(function (voice) {
+        return voice.lang === "zh-CN";
+      }) ||
+      voices.find(function (voice) {
+        return voice.lang === "zh-TW";
+      }) ||
+      voices.find(function (voice) {
+        return voice.lang === "zh-HK";
+      }) ||
+      voices.find(function (voice) {
+        return voice.lang.toLowerCase().startsWith("zh");
+      }) ||
+      null
     );
+  }
 
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.onvoiceschanged =
-        function () {
-          window.speechSynthesis.getVoices();
-        };
+  function speakImmediately() {
+    if (!("speechSynthesis" in window)) {
+      messageText.textContent =
+        "这个浏览器不支援系统语音，请使用 Safari 打开。";
+      return;
     }
-  </script>
+
+    const reply = chooseReply();
+
+    speakerLabel.textContent = "岳母 AI";
+    messageText.textContent = reply;
+    statusText.textContent = "正在回答";
+    hintText.textContent = "正在播放测试语音";
+
+    talkButton.classList.add("active");
+    avatarFrame.classList.add("speaking");
+
+    /*
+      重要：
+      不再等待 1.2 秒。
+      必须在使用者点击按钮的同一刻播放。
+    */
+    currentUtterance = new SpeechSynthesisUtterance(reply);
+
+    const chineseVoice = findChineseVoice();
+
+    if (chineseVoice) {
+      currentUtterance.voice = chineseVoice;
+      currentUtterance.lang = chineseVoice.lang;
+    } else {
+      currentUtterance.lang = "zh-CN";
+    }
+
+    currentUtterance.rate = 0.88;
+    currentUtterance.pitch = 1;
+    currentUtterance.volume = 1;
+
+    currentUtterance.onstart = function () {
+      isSpeaking = true;
+      statusText.textContent = "正在回答";
+      avatarFrame.classList.add("speaking");
+    };
+
+    currentUtterance.onend = function () {
+      currentUtterance = null;
+      resetInterface();
+    };
+
+    currentUtterance.onerror = function (event) {
+      console.log("语音错误：", event.error);
+
+      currentUtterance = null;
+      resetInterface();
+
+      messageText.textContent =
+        "系统语音没有成功播放，请确认使用 Safari，并提高媒体音量。";
+    };
+
+    window.speechSynthesis.speak(currentUtterance);
+  }
+
+  talkButton.addEventListener("click", function () {
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      currentUtterance = null;
+      resetInterface();
+      return;
+    }
+
+    speakImmediately();
+  });
+
+  /*
+    预先加载 iPhone 内的语音列表。
+  */
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.getVoices();
+
+    window.speechSynthesis.onvoiceschanged = function () {
+      window.speechSynthesis.getVoices();
+    };
+  }
+</script>
 </body>
 </html>
