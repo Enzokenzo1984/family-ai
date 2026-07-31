@@ -61,17 +61,17 @@
       min-height: 100vh;
       min-height: 100dvh;
       padding:
-        calc(24px + env(safe-area-inset-top))
-        22px
-        calc(28px + env(safe-area-inset-bottom));
+        calc(20px + env(safe-area-inset-top))
+        18px
+        calc(24px + env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column;
       align-items: center;
       background:
         radial-gradient(
-          circle at 50% 18%,
+          circle at 50% 16%,
           rgba(255, 255, 255, 0.82),
-          transparent 34%
+          transparent 38%
         ),
         linear-gradient(
           180deg,
@@ -105,7 +105,7 @@
 
     .avatar-section {
       width: 100%;
-      margin-top: 30px;
+      margin-top: 18px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -113,8 +113,11 @@
 
     .avatar-frame {
       position: relative;
-      width: 244px;
-      height: 244px;
+      width: 340px;
+      height: 340px;
+      max-width: calc(100vw - 36px);
+      max-height: calc(100vw - 36px);
+      aspect-ratio: 1 / 1;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.84);
       padding: 8px;
@@ -132,13 +135,13 @@
     }
 
     .avatar-image {
-      display: none;
+      display: block;
       object-fit: cover;
       object-position: center;
     }
 
     .avatar-placeholder {
-      display: flex;
+      display: none;
       justify-content: center;
       align-items: center;
       background:
@@ -170,7 +173,7 @@
     }
 
     .name {
-      margin: 24px 0 5px;
+      margin: 18px 0 5px;
       font-size: 30px;
       line-height: 1.2;
     }
@@ -183,9 +186,9 @@
 
     .conversation-card {
       width: 100%;
-      min-height: 120px;
-      margin-top: 28px;
-      padding: 21px;
+      min-height: 112px;
+      margin-top: 20px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -216,7 +219,7 @@
     .controls {
       width: 100%;
       margin-top: auto;
-      padding-top: 30px;
+      padding-top: 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -292,7 +295,7 @@
       }
 
       to {
-        transform: scale(1.055);
+        transform: scale(1.045);
       }
     }
 
@@ -305,7 +308,7 @@
       }
 
       to {
-        transform: scale(1.035);
+        transform: scale(1.025);
         box-shadow:
           0 22px 55px var(--shadow),
           0 0 0 15px rgba(53, 47, 43, 0);
@@ -324,28 +327,40 @@
       }
     }
 
-    @media (max-height: 720px) {
-      .avatar-section {
-        margin-top: 16px;
-      }
-
+    @media (max-width: 390px) {
       .avatar-frame {
-        width: 205px;
-        height: 205px;
+        width: 320px;
+        height: 320px;
+      }
+    }
+
+    @media (max-height: 760px) {
+      .avatar-frame {
+        width: 285px;
+        height: 285px;
       }
 
-      .avatar-placeholder {
-        font-size: 92px;
+      .avatar-section {
+        margin-top: 10px;
       }
 
       .name {
-        margin-top: 17px;
+        margin-top: 12px;
         font-size: 26px;
       }
 
       .conversation-card {
-        margin-top: 18px;
-        min-height: 100px;
+        min-height: 96px;
+        margin-top: 14px;
+      }
+
+      .controls {
+        padding-top: 16px;
+      }
+
+      .talk-button {
+        width: 74px;
+        height: 74px;
       }
     }
   </style>
@@ -367,7 +382,7 @@
         <img
           class="avatar-image"
           id="avatarImage"
-          src=""
+          src="images/mum.jpg"
           alt="岳母头像"
         >
 
@@ -422,16 +437,6 @@
   <script>
     "use strict";
 
-    /*
-      以后上传岳母照片后，
-      只需要把下面 "" 改成照片路径。
-
-      例如：
-      const AVATAR_URL = "images/mum.jpg";
-    */
-
-    const AVATAR_URL = "";
-
     const avatarImage =
       document.getElementById("avatarImage");
 
@@ -467,25 +472,17 @@
 
     let isSpeaking = false;
 
-    function loadAvatar() {
-      if (!AVATAR_URL.trim()) {
-        avatarImage.style.display = "none";
-        avatarPlaceholder.style.display = "flex";
-        return;
-      }
+    avatarImage.addEventListener("load", function () {
+      avatarImage.style.display = "block";
+      avatarPlaceholder.style.display = "none";
+    });
 
-      avatarImage.src = AVATAR_URL;
-
-      avatarImage.onload = function () {
-        avatarImage.style.display = "block";
-        avatarPlaceholder.style.display = "none";
-      };
-
-      avatarImage.onerror = function () {
-        avatarImage.style.display = "none";
-        avatarPlaceholder.style.display = "flex";
-      };
-    }
+    avatarImage.addEventListener("error", function () {
+      avatarImage.style.display = "none";
+      avatarPlaceholder.style.display = "flex";
+      messageText.textContent =
+        "找不到 images/mum.jpg，请检查照片名称和路径。";
+    });
 
     function chooseReply() {
       const randomIndex =
@@ -605,12 +602,12 @@
       beginDemoInteraction
     );
 
-    window.speechSynthesis.onvoiceschanged =
-      function () {
-        window.speechSynthesis.getVoices();
-      };
-
-    loadAvatar();
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.onvoiceschanged =
+        function () {
+          window.speechSynthesis.getVoices();
+        };
+    }
   </script>
 </body>
 </html>
