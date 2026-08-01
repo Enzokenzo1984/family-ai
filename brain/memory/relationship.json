@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "2.0",
+  "rules": {
+    "elaine": {
+      "allowed": [
+        "Elian",
+        "琪琪",
+        "Ah Fen",
+        "其他与当前话题相关的家人"
+      ],
+      "blockedProactive": [
+        "Nick"
+      ],
+      "exceptions": [
+        "Elaine 主动提起 Nick",
+        "Elaine 主动询问 Nick",
+        "当前问题明确涉及 Nick"
+      ]
+    }
+  }
+}

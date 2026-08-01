@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "2.0",
+  "lookaheadDays": 7,
+  "expireAfterEventDays": 2,
+  "purpose": "未来事件与自然提醒",
+  "storage": "Cloudflare D1 memories table"
+}
