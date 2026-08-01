@@ -1,6 +1,0 @@
-{
-  "schemaVersion": "2.0",
-  "retentionDays": 30,
-  "purpose": "最近一个月的生活事件",
-  "storage": "Cloudflare D1 memories table"
-}
