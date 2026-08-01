@@ -1,8 +1,0 @@
-{
-  "schemaVersion": "2.0",
-  "engine": "Cloudflare D1",
-  "monthlyMemoryDays": 30,
-  "reminderLookaheadDays": 7,
-  "recallLimitPerTurn": 1,
-  "note": "真正运行中的记忆保存在 D1。这里是政策与结构说明，不保存家人的私人对话内容。"
-}
