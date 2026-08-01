@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "currentVersion": "1.1",
+  "updates": [
+    {
+      "version": "1.0",
+      "date": "2026-08-01",
+      "basis": [
+        "用户明确确认的阿梅性格",
+        "客家话录音只学习说话方式，中文输出"
+      ],
+      "notYetClaimed": [
+        "尚未完成逐段录音转写",
+        "尚未确认真实口头禅频率"
+      ]
+    },
+    {
+      "version": "1.1",
+      "date": "2026-08-01",
+      "basis": [
+        "新增两段中文 Voice Clip",
+        "新增独立中文 ElevenLabs Voice ID",
+        "用户要求中文与客家话分别使用不同 Voice ID"
+      ],
+      "objectiveAudioMetadata": {
+        "mandarin 1.wav": 102.814,
+        "mandarin 2.wav": 102.815
+      },
+      "notClaimed": [
+        "没有逐字转录中文录音",
+        "没有把未确认的口头禅写成人格事实",
+        "没有声称已完整复制语气"
+      ]
+    }
+  ]
+}
