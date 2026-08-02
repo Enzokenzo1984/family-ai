@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "2.0",
+  "baseVersion": "v11.1.1",
+  "runtimeStorage": "Cloudflare D1",
+  "monthlyMemoryDays": 30,
+  "reminderLookaheadDays": 7,
+  "eventExpiryDaysAfterCompletion": 2,
+  "recallLimitPerTurn": 1,
+  "recallCooldownHours": 36,
+  "principles": [
+    "先回答当前问题，再自然提起最多一件记忆",
+    "普通生活事件最长保留30天",
+    "有明确日期的未来事件在7天内可自然提醒",
+    "过期记忆自动停用",
+    "不说系统提醒或数据库显示"
+  ]
+}
