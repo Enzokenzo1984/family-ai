@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "language": "hakka",
+  "voiceProfile": "hakka",
+  "learningTable": "speech_learning_hakka",
+  "rules": [
+    "客话模式的所有教学只写入客话库",
+    "客话回答只读取客话库",
+    "客话 TTS 只使用客话发音教学",
+    "禁止读取中文库"
+  ]
+}

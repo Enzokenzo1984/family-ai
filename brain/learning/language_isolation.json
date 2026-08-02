@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "version": "12.0",
+  "writePolicy": "follow_selected_output_language",
+  "readPolicy": "same_language_and_voice_profile_only",
+  "chinese": {
+    "language": "zh",
+    "voiceProfile": "mandarin",
+    "table": "speech_learning_zh"
+  },
+  "hakka": {
+    "language": "hakka",
+    "voiceProfile": "hakka",
+    "table": "speech_learning_hakka"
+  },
+  "guards": [
+    "separate D1 tables",
+    "language field match",
+    "voice_profile field match"
+  ]
+}

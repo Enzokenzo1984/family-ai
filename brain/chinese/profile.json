@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "language": "zh",
+  "voiceProfile": "mandarin",
+  "learningTable": "speech_learning_zh",
+  "rules": [
+    "中文模式的所有教学只写入中文库",
+    "中文回答只读取中文库",
+    "中文 TTS 只使用中文发音教学",
+    "禁止读取客话库"
+  ]
+}

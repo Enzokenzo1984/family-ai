@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "sharedAcrossLanguages": true,
+  "contains": [
+    "personality",
+    "memory",
+    "relationship",
+    "emotion",
+    "daily_life"
+  ],
+  "note": "共享 Mother DNA 不包含语言发音、语法、语尾或词汇教学。"
+}
