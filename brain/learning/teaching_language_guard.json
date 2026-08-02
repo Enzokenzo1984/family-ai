@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "1.0",
+  "version": "12.0.1",
+  "policy": "teaching_must_match_selected_output_language",
+  "chineseMismatchAction": "reject_and_ask_to_switch_hakka",
+  "hakkaMismatchAction": "reject_and_ask_to_switch_chinese",
+  "savedOnMismatch": false
+}

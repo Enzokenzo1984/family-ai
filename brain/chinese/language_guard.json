@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "version": "12.0.1",
+  "language": "zh",
+  "allowedEndings": [
+    "呀",
+    "咯",
+    "none"
+  ],
+  "blockedDialectTerms": [
+    "食饱吂",
+    "冇使",
+    "唔使",
+    "咩",
+    "喺",
+    "佢",
+    "嚟",
+    "嘅",
+    "咗",
+    "噉",
+    "係",
+    "毋",
+    "共下",
+    "今晡日",
+    "心肚",
+    "若兜"
+  ],
+  "rules": [
+    "中文只使用自然现代中文",
+    "保留马来西亚华语语气，但不混客话、广东话或福建话",
+    "问句已有吗或问号时不再加呀、呢、咯、啦",
+    "中文只读取 speech_learning_zh 与 mandarin voice profile"
+  ]
+}
