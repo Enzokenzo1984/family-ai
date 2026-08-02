@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "1.0",
+  "version": "11.5",
+  "scopeDefault": "GLOBAL",
+  "confirmationRequired": true,
+  "storage": "Cloudflare D1",
+  "priority": [
+    "confirmed_user_teaching",
+    "speech_dna",
+    "personality_dna",
+    "chatgpt"
+  ],
+  "categories": [
+    "sentence",
+    "grammar",
+    "pronunciation",
+    "ending",
+    "hakka",
+    "personality"
+  ],
+  "allProfilesShareLearning": true
+}

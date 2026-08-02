@@ -1,0 +1,5 @@
+{
+  "schemaVersion": "1.0",
+  "runtimeStorage": "speech_learning_history",
+  "policy": "新版本启用时，旧版本标记 superseded，不直接删除。"
+}
