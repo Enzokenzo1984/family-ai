@@ -1191,6 +1191,8 @@
     let liveAvatarSpeechWatchdog = null;
     let suppressNextSpeechPlayback = false;
     const liveAvatarSessionMode = "FULL";
+    const liveAvatarBrainMode =
+      "FAMILY_AI_CUSTOM_LLM_ECHO";
     let liveAvatarVoiceAgentLanguage = "";
 
     const FAMILY_USERS = {
@@ -2794,11 +2796,21 @@
 
       try {
         liveAvatarState.textContent =
-          "Live Avatar 正在准备妈妈声音";
+          "正在把 Family AI 答案交给 Live Avatar";
+
+        const language =
+          getSelectedOutputLanguage() ===
+          "hakka"
+            ? "hakka"
+            : "zh";
+
+        const exactAnswerCommand =
+          `[[FAMILY_AI_SPEAK:${language}]]` +
+          String(answer || "");
 
         const eventId =
           liveAvatarSession.message(
-            String(answer || "")
+            exactAnswerCommand
           );
 
         liveAvatarLastAudioEventId =
