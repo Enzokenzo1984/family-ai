@@ -996,7 +996,6 @@
           id="liveAvatarVideo"
           playsinline
           autoplay
-          muted
         ></video>
 
         <div
@@ -1191,6 +1190,7 @@
     let liveAvatarLastAudioEventId = "";
     let liveAvatarSpeechWatchdog = null;
     let suppressNextSpeechPlayback = false;
+    const liveAvatarSessionMode = "FULL";
 
     const FAMILY_USERS = {
       elaine: {
@@ -2295,7 +2295,7 @@
         readyEvent,
         function () {
           try {
-            liveAvatarVideo.muted = true;
+            liveAvatarVideo.muted = false;
 
             session.attach(
               liveAvatarVideo
@@ -2349,7 +2349,7 @@
             String(event?.event_id || "");
           clearLiveAvatarSpeechWatchdog();
           liveAvatarState.textContent =
-            "Live Avatar 嘴型同步中";
+            "Live Avatar 正在说话";
         }
       );
 
@@ -2470,6 +2470,8 @@
           new sdk.LiveAvatarSession(
             liveAvatarSessionToken,
             {
+              // Family AI 继续负责麦克风、STT、Memory 和回答。
+              // LiveAvatar FULL Mode 只负责妈妈 Voice、音频和嘴型。
               voiceChat: false
             }
           );
@@ -2502,7 +2504,7 @@
 
         setLiveAvatarUi(
           true,
-          `Live Avatar 已开启 · 剩余 ${tokenData.creditsLeft} credits · 声音由 Family AI 播放`
+          `Live Avatar FULL Mode 已开启 · 剩余 ${tokenData.creditsLeft} credits`
         );
 
         startLiveAvatarCreditMonitor();
@@ -2711,7 +2713,7 @@
           setTimeout(
             function () {
               liveAvatarState.textContent =
-                "Live Avatar 画面已连接；声音由 Family AI 播放";
+                "Live Avatar FULL Mode 已连接";
               setAvatarMode("");
             },
             4500
@@ -2759,6 +2761,50 @@
         }
       }
     );
+
+    async function speakThroughFullMode(
+      answer
+    ) {
+      if (
+        !liveAvatarActive ||
+        !liveAvatarSession
+      ) {
+        return false;
+      }
+
+      try {
+        liveAvatarState.textContent =
+          "Live Avatar 正在准备妈妈声音";
+
+        const eventId =
+          liveAvatarSession.message(
+            String(answer || "")
+          );
+
+        liveAvatarLastAudioEventId =
+          String(eventId || "");
+
+        statusText.textContent =
+          "正在回答";
+
+        hintText.textContent =
+          "Live Avatar 正在说话";
+
+        setAvatarMode("speaking");
+
+        return true;
+      } catch (error) {
+        console.error(
+          "FULL Mode message failed:",
+          error
+        );
+
+        liveAvatarState.textContent =
+          "Live Avatar 回答失败，已使用原本 Family AI 声音";
+
+        return false;
+      }
+    }
 
     async function speakAnswer(answer) {
       suppressNextSpeechPlayback = false;
@@ -3037,7 +3083,18 @@
         ) {
           finishSilentTeachingResponse();
         } else {
-          speakAnswer(answer);
+          const spokenByLiveAvatar =
+            await speakThroughFullMode(
+              answer
+            );
+
+          if (!spokenByLiveAvatar) {
+            speakAnswer(answer);
+          } else {
+            // FULL Mode 会用已连接的妈妈 ElevenLabs Voice
+            // 播放声音并生成嘴型，避免本地声音重复。
+            setBusy(false);
+          }
         }
       } catch (error) {
         console.error(error);
