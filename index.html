@@ -1190,6 +1190,7 @@
     let liveAvatarLastSpeakEndedAt = 0;
     let liveAvatarLastAudioEventId = "";
     let liveAvatarSpeechWatchdog = null;
+    let suppressNextSpeechPlayback = false;
 
     const FAMILY_USERS = {
       elaine: {
@@ -2680,6 +2681,7 @@
       audioBlob
     ) {
       if (
+        suppressNextSpeechPlayback ||
         !liveAvatarActive ||
         !liveAvatarSession
       ) {
@@ -2759,6 +2761,7 @@
     );
 
     async function speakAnswer(answer) {
+      suppressNextSpeechPlayback = false;
       stopCurrentVoice();
 
       statusText.textContent = "正在准备妈妈声音";
@@ -2880,6 +2883,53 @@
       }
     }
 
+    function shouldSuppressResponseSpeech(
+      data,
+      originalQuestion = ""
+    ) {
+      if (data?.suppressSpeech === true) {
+        return true;
+      }
+
+      const intent = String(
+        data?.intent || ""
+      ).toLowerCase();
+
+      if (
+        intent.startsWith("teaching_") ||
+        intent.startsWith("pronunciation_")
+      ) {
+        return true;
+      }
+
+      const source = String(
+        data?.source || ""
+      ).toLowerCase();
+
+      if (
+        source.startsWith("teaching-") ||
+        source.startsWith("pronunciation-")
+      ) {
+        return true;
+      }
+
+      // 最后一层保护：明确以“教你”开头的教学输入只显示文字。
+      return /^教你\s*[:：]?/u.test(
+        String(originalQuestion || "").trim()
+      );
+    }
+
+    function finishSilentTeachingResponse() {
+      suppressNextSpeechPlayback = true;
+      stopCurrentVoice();
+      setAvatarMode("");
+      setBusy(false);
+      statusText.textContent =
+        "教学内容已显示";
+      hintText.textContent =
+        "教学确认不会朗读";
+    }
+
     async function askFamilyAI(question) {
       const cleanQuestion = question.trim();
 
@@ -2978,7 +3028,17 @@
           conversationMessages.slice(-12);
 
         showMessage(getAiSpeakerName(), answer);
-        speakAnswer(answer);
+
+        if (
+          shouldSuppressResponseSpeech(
+            data,
+            cleanQuestion
+          )
+        ) {
+          finishSilentTeachingResponse();
+        } else {
+          speakAnswer(answer);
+        }
       } catch (error) {
         console.error(error);
 
