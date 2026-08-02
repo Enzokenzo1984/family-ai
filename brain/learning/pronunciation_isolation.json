@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0",
+  "version": "12.0.2",
+  "chinese": {
+    "table": "pronunciation_dictionary_zh",
+    "historyTable": "pronunciation_history_zh",
+    "voiceProfile": "mandarin"
+  },
+  "hakka": {
+    "table": "pronunciation_dictionary_hakka",
+    "historyTable": "pronunciation_history_hakka",
+    "voiceProfile": "hakka"
+  },
+  "guards": [
+    "separate physical tables",
+    "language field check",
+    "voice_profile field check",
+    "same-language TTS lookup only"
+  ]
+}

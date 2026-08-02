@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "version": "12.0.2",
+  "language": "zh",
+  "voiceProfile": "mandarin",
+  "table": "pronunciation_dictionary_zh",
+  "globalReplacement": true,
+  "longestMatchFirst": true,
+  "crossLanguageAccess": false,
+  "toneFormat": "syllable(tone), e.g. jiu(4) jiu(neutral)"
+}

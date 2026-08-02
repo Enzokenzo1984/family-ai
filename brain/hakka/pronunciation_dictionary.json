@@ -1,5 +1,11 @@
 {
   "schemaVersion": "1.0",
-  "runtimeStorage": "D1 speech_learning",
-  "note": "聊天中确认的客话发音全 Profile 共用；此文件不保存私人教学内容。"
+  "version": "12.0.2",
+  "language": "hakka",
+  "voiceProfile": "hakka",
+  "table": "pronunciation_dictionary_hakka",
+  "globalReplacement": true,
+  "longestMatchFirst": true,
+  "crossLanguageAccess": false,
+  "toneFormat": "syllable(tone), e.g. kiu(1) kiu(3)"
 }
