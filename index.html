@@ -1191,6 +1191,7 @@
     let liveAvatarSpeechWatchdog = null;
     let suppressNextSpeechPlayback = false;
     const liveAvatarSessionMode = "FULL";
+    let liveAvatarVoiceAgentLanguage = "";
 
     const FAMILY_USERS = {
       elaine: {
@@ -1267,8 +1268,12 @@
       languageModal.setAttribute("aria-hidden", "true");
     }
 
-    function selectOutputLanguage(languageId) {
+    async function selectOutputLanguage(languageId) {
       if (!OUTPUT_LANGUAGES[languageId]) return;
+
+      const shouldRestartLiveAvatar =
+        liveAvatarActive ||
+        Boolean(liveAvatarSession);
 
       selectedOutputLanguage = languageId;
       localStorage.setItem(
@@ -1291,6 +1296,17 @@
 
       statusText.textContent =
         `回答语言：${OUTPUT_LANGUAGES[languageId].label}`;
+
+      if (shouldRestartLiveAvatar) {
+        liveAvatarState.textContent =
+          `正在切换${OUTPUT_LANGUAGES[languageId].label}妈妈声音`;
+
+        await fallbackToFamilyAI(
+          "正在切换语言"
+        );
+
+        await startLiveAvatar();
+      }
 
       loadProactiveGreeting();
     }
@@ -2466,6 +2482,10 @@
         liveAvatarSessionToken =
           tokenData.sessionToken;
 
+        liveAvatarVoiceAgentLanguage =
+          tokenData.outputLanguage ||
+          getSelectedOutputLanguage();
+
         const session =
           new sdk.LiveAvatarSession(
             liveAvatarSessionToken,
@@ -2504,7 +2524,7 @@
 
         setLiveAvatarUi(
           true,
-          `Live Avatar FULL Mode 已开启 · 剩余 ${tokenData.creditsLeft} credits`
+          `Live Avatar FULL Mode 已开启 · ${tokenData.outputLanguage === "hakka" ? "客家" : "中文"} Voice Agent · 剩余 ${tokenData.creditsLeft} credits`
         );
 
         startLiveAvatarCreditMonitor();
