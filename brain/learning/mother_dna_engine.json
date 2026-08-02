@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "2.0",
+  "version": "11.6",
+  "name": "Mother DNA Teaching Engine",
+  "entryCommand": "教你：",
+  "requiresExplicitPrefix": true,
+  "defaultScope": "GLOBAL",
+  "confirmationRequired": true,
+  "learns": [
+    "wording",
+    "grammar",
+    "ending",
+    "pronunciation",
+    "emotion",
+    "identity"
+  ],
+  "stores": [
+    "original",
+    "corrected",
+    "category",
+    "reason",
+    "emotion_context",
+    "real_example",
+    "version_history"
+  ]
+}

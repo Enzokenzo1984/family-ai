@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "version": "1.5",
+  "version": "1.6",
   "name": "Amei Personality DNA",
   "status": "mandarin-voice-reference-added",
   "importantNote": "已加入两段中文 Voice Clip 作为中文声音与节奏参考。本版只依据可客观确认的录音长度、停顿结构及用户已确认的妈妈风格调整；没有逐字转录，因此不把未经确认的具体词语或内容写成人格事实。",
@@ -152,5 +152,13 @@
     "教学先确认再永久保存",
     "发音提示只用于 TTS，不在聊天文字中显示",
     "旧版本保留在 D1 history，可追踪修改"
+  ],
+  "motherDNARules": [
+    "只有以“教你：”开头才进入永久教学模式",
+    "教学默认 GLOBAL，全部 Profile 共用",
+    "先显示学习摘要，确认后才保存",
+    "同时学习原因、情境和真实例句",
+    "发音提示只用于 TTS",
+    "保留每次修改的版本历史"
   ]
 }
