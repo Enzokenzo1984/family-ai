@@ -1194,6 +1194,9 @@
     const liveAvatarBrainMode =
       "FAMILY_AI_CUSTOM_LLM_ECHO";
     let liveAvatarVoiceAgentLanguage = "";
+    let liveAvatarOpeningMuteTimer = null;
+    let liveAvatarSpeechSequence = 0;
+    let liveAvatarSpeechInFlight = false;
 
     const FAMILY_USERS = {
       elaine: {
@@ -2260,6 +2263,9 @@
     ) {
       clearLiveAvatarCreditTimer();
       clearLiveAvatarSpeechWatchdog();
+      clearLiveAvatarOpeningMuteTimer();
+      liveAvatarSpeechInFlight = false;
+      liveAvatarSpeechSequence += 1;
 
       const oldSession =
         liveAvatarSession;
@@ -2313,7 +2319,7 @@
         readyEvent,
         function () {
           try {
-            liveAvatarVideo.muted = false;
+            liveAvatarVideo.muted = true;
 
             session.attach(
               liveAvatarVideo
@@ -2442,6 +2448,93 @@
         );
     }
 
+    function clearLiveAvatarOpeningMuteTimer() {
+      if (liveAvatarOpeningMuteTimer) {
+        clearTimeout(
+          liveAvatarOpeningMuteTimer
+        );
+        liveAvatarOpeningMuteTimer = null;
+      }
+    }
+
+    function suppressLiveAvatarOpeningSpeech(
+      session
+    ) {
+      clearLiveAvatarOpeningMuteTimer();
+
+      liveAvatarVideo.muted = true;
+
+      const interruptSafely =
+        function () {
+          if (
+            liveAvatarSession !== session
+          ) {
+            return;
+          }
+
+          try {
+            session.interrupt();
+          } catch (error) {
+            console.warn(
+              "Opening interrupt skipped:",
+              error
+            );
+          }
+        };
+
+      // Opening text can begin just after session connection.
+      setTimeout(
+        interruptSafely,
+        120
+      );
+
+      setTimeout(
+        interruptSafely,
+        650
+      );
+
+      liveAvatarOpeningMuteTimer =
+        setTimeout(
+          function () {
+            if (
+              liveAvatarSession === session
+            ) {
+              liveAvatarVideo.muted = false;
+              liveAvatarState.textContent =
+                "Live Avatar 已连接，等待 Family AI 回答";
+            }
+          },
+          1250
+        );
+    }
+
+    async function prepareLiveAvatarSpeech(
+      answer
+    ) {
+      const result =
+        await fetchLiveAvatarAction(
+          "liveavatar_prepare_speech",
+          {
+            text:
+              String(answer || "")
+          }
+        );
+
+      if (
+        !result?.ok ||
+        !result?.speechText
+      ) {
+        return {
+          speechText:
+            String(answer || ""),
+          outputLanguage:
+            getSelectedOutputLanguage()
+        };
+      }
+
+      return result;
+    }
+
     async function startLiveAvatar() {
       if (
         liveAvatarStarting ||
@@ -2506,6 +2599,10 @@
         );
 
         await session.start();
+
+        suppressLiveAvatarOpeningSpeech(
+          session
+        );
 
         // 某些浏览器 ready event 很快，补一次 attach。
         setTimeout(
@@ -2794,20 +2891,52 @@
         return false;
       }
 
+      const sequence =
+        ++liveAvatarSpeechSequence;
+
       try {
+        liveAvatarSpeechInFlight = true;
+
+        // Stop any previous or opening utterance before one complete answer.
+        try {
+          liveAvatarSession.interrupt();
+        } catch {}
+
+        liveAvatarVideo.muted = false;
+
         liveAvatarState.textContent =
-          "正在把 Family AI 答案交给 Live Avatar";
+          "正在准备妈妈的语气和发音";
+
+        const prepared =
+          await prepareLiveAvatarSpeech(
+            answer
+          );
+
+        if (
+          sequence !==
+          liveAvatarSpeechSequence
+        ) {
+          return false;
+        }
 
         const language =
-          getSelectedOutputLanguage() ===
+          prepared?.outputLanguage ===
           "hakka"
             ? "hakka"
             : "zh";
 
+        const speechText =
+          String(
+            prepared?.speechText ||
+            answer ||
+            ""
+          ).trim();
+
         const exactAnswerCommand =
           `[[FAMILY_AI_SPEAK:${language}]]` +
-          String(answer || "");
+          speechText;
 
+        // One answer is always sent as one message to one active session.
         const eventId =
           liveAvatarSession.message(
             exactAnswerCommand
@@ -2820,7 +2949,14 @@
           "正在回答";
 
         hintText.textContent =
-          "Live Avatar 正在说话";
+          language === "hakka"
+            ? "妈妈正在用客家话回答"
+            : "妈妈正在用中文回答";
+
+        liveAvatarState.textContent =
+          language === "hakka"
+            ? "客家 Voice Agent 正在说话"
+            : "中文 Voice Agent 正在说话";
 
         setAvatarMode("speaking");
 
@@ -2835,8 +2971,16 @@
           "Live Avatar 回答失败，已使用原本 Family AI 声音";
 
         return false;
+      } finally {
+        if (
+          sequence ===
+          liveAvatarSpeechSequence
+        ) {
+          liveAvatarSpeechInFlight = false;
+        }
       }
     }
+
 
     async function speakAnswer(answer) {
       suppressNextSpeechPlayback = false;
